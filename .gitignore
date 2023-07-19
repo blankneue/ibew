@@ -1,0 +1,5 @@
+.stack-work
+ibew.cabal
+stack.yaml.lock
+*.pem
+*.sqlite3
