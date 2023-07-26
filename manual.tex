@@ -1,0 +1,63 @@
+\documentclass{book}
+
+\usepackage[activate={true,nocompatibility}
+           ,final
+           ,tracking=true
+           ,kerning=true
+           ,spacing=true
+           ,factor=1100
+           ,stretch=10
+           ,shrink=10]{microtype}
+\microtypecontext{spacing=nonfrench}
+
+\usepackage{verbatim}
+\newenvironment{code}{\footnotesize\verbatim}{\endverbatim\normalsize}
+
+\title{Tupa Specification \& Ibew Reference Implementation, with Manual}
+\author{blank}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\part{Introduction and User's Manual}
+Ibew is the reference implementation of the Tupa specification.
+Tupa is a specification for an instant messaging program, which lists in detail features that serve the unique needs of plural people.
+Ibew is an application which implements those features, and should be used as a reference for any ambiguity in the specification.
+This document contains both the specification, and the application; this naturally divides the document into two parts: the test suite, which exhaustively explains and formalizes Tupa, and the implementation, which will .
+
+
+\part{Tupa: Specification}
+
+Tupa differs from standard instant messenger applications with one major feature: accounts are not directly tied to the titles that appear on messages.
+Outside of that, it is a fairly standard instant messenger application.
+There are two layers of indirection for organizing messages; the top layer is called systems, which contain channels, which contain messages.
+Messages are rich text associated with a specific headmate, with the ability to add attachments.
+By associating messages with a headmate, we finally get into the unique feature.
+Instead of an account having a single name and appearance which distinguish their messages, accounts can have many names and appearances, which are called `headmates.'
+
+This specification will be split up into a series of explanations of different features, interspersed with programs that will test an implementation's correctness.
+This ensures that anyone developing a Tupa implementation will be able to ensure they interoperate correctly with other implementations.
+To begin with, we'll go over the different categories we sort features into, broadly stated as user stories.
+
+\begin{enumerate}
+\item A prospective user wishes to sign up.
+\item An existing user wishes to sign in.
+\item A user reads existing messages.
+\item A user sends a new message.
+\item A user changes their settings.
+\item A user modifies their headmates.
+\item An administrator promotes a moderator.
+\item A moderator uses their unique priveleges.
+\end{enumerate}
+
+\input{test/Spec.lhs}
+
+\part{Ibew: Implementation}
+\input{src/App.lhs}
+\input{src/DB.lhs}
+\input{src/Messages.lhs}
+\input{src/Configuration.lhs}
+\input{app/Main.lhs}
+\end{document}

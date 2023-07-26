@@ -3,3 +3,8 @@ ibew.cabal
 stack.yaml.lock
 *.pem
 *.sqlite3
+dist-newstyle
+*.pdf
+*.t2d
+*.log
+*.sqlite3*

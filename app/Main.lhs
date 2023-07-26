@@ -1,11 +1,11 @@
 \begin{code}
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main (main) where
 
-import Lib
+import App
+import Configuration
 
 main :: IO ()
-main = do
-  let dbfile = "./messages.sqlite3"
-  initDB dbfile
-  startApp dbfile "" ""
+main = run $ Configuration 8080 "messages.sqlite3" 10 "c.pem" "k.pem"
 \end{code}

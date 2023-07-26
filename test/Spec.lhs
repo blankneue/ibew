@@ -1,6 +1,18 @@
+\chapter{Sign Up}
+
+\chapter{Sign In}
+
+\chapter{Reading Messages}
+
+\chapter{Sending Messages}
+
+\chapter{Account Settings}
+
+\chapter{Headmates}
+
+\chapter{Moderation}
+
 \begin{code}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE OverloadedStrings #-}
 module Main (main) where
 
 import Lib (app)

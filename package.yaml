@@ -19,14 +19,21 @@ extra-source-files:
 # common to point users to the README.md file.
 description:         Plural-first instant messaging.
 
+language: GHC2021
+
 dependencies:
 - base >= 4.7 && < 5
 - aeson
+- dhall
+- monad-logger
+- persistent
+- persistent-sqlite
 - servant-client
 - servant-server
 - servant-websockets
-- sqlite-simple
 - text
+- time
+- transformers
 - wai
 - warp
 - warp-tls
