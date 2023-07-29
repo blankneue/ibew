@@ -24,10 +24,14 @@ language: GHC2021
 dependencies:
 - base >= 4.7 && < 5
 - aeson
+- blaze-markup
+- blaze-html
+- crypton
 - dhall
 - monad-logger
 - persistent
 - persistent-sqlite
+- servant-blaze
 - servant-client
 - servant-server
 - servant-websockets

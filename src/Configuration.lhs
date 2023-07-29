@@ -2,12 +2,14 @@
 {-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE OverloadedStrings  #-}
 
-module Configuration where
+module Configuration (Configuration (..)) where
 
 import Dhall
 
 data Configuration = Configuration
   { port :: Natural
+  , accountDB :: Text
+  , accountPoolSize :: Natural
   , messagesDB :: Text
   , messagesPoolSize :: Natural
   , certificate :: FilePath

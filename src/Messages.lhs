@@ -1,7 +1,7 @@
 \begin{code}
 {-# LANGUAGE DataKinds                  #-}
 
-module Messages where
+module Messages (MESSAGES, messageIO) where
 
 import DB (Message (..))
 
@@ -35,9 +35,7 @@ messageIO o = echo
         let z' = fromDataMessage z
         if z' == empty
         then sendClose c empty
-        else do
-          t <- getCurrentTime
-          runSqlPersistMPool (insert $ Message z' t) o
+        else getCurrentTime >>= \t ->
+          runSqlPersistMPool (insert $ Message z' t) o >>
           sendTextData c z'
-          return ()
 \end{code}
