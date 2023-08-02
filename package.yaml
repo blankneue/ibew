@@ -26,13 +26,16 @@ dependencies:
 - aeson
 - blaze-markup
 - blaze-html
+- bytestring
 - crypton
 - dhall
 - monad-logger
 - persistent
 - persistent-sqlite
+- random
 - servant-blaze
 - servant-client
+- servant-multipart
 - servant-server
 - servant-websockets
 - text

@@ -5,20 +5,17 @@
 {-# LANGUAGE TypeFamilies               #-}
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE UndecidableInstances       #-}
-\end{code}
 
-
-module DB (Account (..), migrateAccount
-          ,Message (..), migrateMessage) where
-
-\begin{code}
 module DB where
 
-import Data.Aeson.TH
-import Data.Text
-import Data.Time
-import Database.Persist.TH
-import Database.Persist.Sqlite
+import Data.Aeson.TH (deriveJSON, defaultOptions)
+import Data.Text (Text)
+import Data.Time (UTCTime)
+import Database.Persist.TH (share
+                           ,mkPersist
+                           ,sqlSettings
+                           ,mkMigrate
+                           ,persistLowerCase)
 
 share [mkPersist sqlSettings, mkMigrate "migrateAccount"] [persistLowerCase|
 Account
@@ -41,5 +38,4 @@ Message
 |]
 
 $(deriveJSON defaultOptions ''Message)
-
 \end{code}

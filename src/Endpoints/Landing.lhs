@@ -2,20 +2,23 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Landing where
+module Endpoints.Landing (LANDING, Landing, landing) where
 
 import Servant
 import Servant.HTML.Blaze
 import Text.Blaze
-import Text.Blaze.Html5
+import Text.Blaze.Html5 as H
+import Text.Blaze.Html5.Attributes as A
 
 data Landing = Landing
 instance ToMarkup Landing where
-  toMarkup l = docTypeHtml $ do
-    Text.Blaze.Html5.head $ do
-      title "Ibew Tupa!!!"
+  toMarkup _ = docTypeHtml $ do
+    H.head $ do
+      H.title "tupa"
     body $ do
-      p "Hello world"
+      a ! href "app" $ "Sign In"
+      br
+      a ! href "register" $ "Sign Up"
 
 type LANDING = Get '[HTML] Landing
 

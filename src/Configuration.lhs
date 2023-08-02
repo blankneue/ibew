@@ -1,10 +1,9 @@
 \begin{code}
 {-# LANGUAGE DeriveGeneric      #-}
-{-# LANGUAGE OverloadedStrings  #-}
 
 module Configuration (Configuration (..)) where
 
-import Dhall
+import Dhall (FromDhall, Text, Natural, Generic)
 
 data Configuration = Configuration
   { port :: Natural

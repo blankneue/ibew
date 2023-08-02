@@ -5,18 +5,28 @@ module App
 
 import Configuration
 import DB
-import Landing
-import Login
-import Messages
+import Endpoints.Landing
+import Endpoints.Login
+import Endpoints.Messages
+import Endpoints.Register
 
 import Control.Monad.Logger (runStderrLoggingT)
-import Database.Persist.Sqlite
+import Database.Persist.Sqlite (ConnectionPool
+                               ,runSqlPool
+                               ,runMigration
+                               ,createSqlitePool)
 import Network.Wai.Handler.Warp (defaultSettings,setPort)
 import Network.Wai.Handler.WarpTLS (tlsSettings,runTLS)
-import Servant
+import Servant ((:<|>) (..)
+               ,(:>)
+               ,Context ((:.), EmptyContext)
+               ,Server
+               ,Proxy (..)
+               ,serveWithContext)
 
 
 type APP = LANDING
+      :<|> REGISTER
       :<|> LOGIN :>
          ( MESSAGES
          )
@@ -24,8 +34,8 @@ type APP = LANDING
 api :: Proxy APP
 api = Proxy
 
-server :: ConnectionPool -> Server APP
-server o = landing :<|> return (messageIO o)
+server :: ConnectionPool -> ConnectionPool -> Server APP
+server m a = landing :<|> (registerIO a) :<|> return (messageIO m)
 
 run :: Configuration -> IO ()
 run c = let fromNatural = fromInteger . toInteger
@@ -33,7 +43,7 @@ run c = let fromNatural = fromInteger . toInteger
             p = fromNatural $ port c
             t = tlsSettings (certificate c) (privateKey c)
             e = setPort p defaultSettings
-            v m a = serveWithContext api (ctx a) (server m)
+            v m a = serveWithContext api (ctx a) (server m a)
             ctx a = loginIO a :. EmptyContext
         in do
              (m,a) <- runStderrLoggingT $ do
@@ -43,5 +53,4 @@ run c = let fromNatural = fromInteger . toInteger
              runSqlPool (runMigration migrateMessage) m
              runSqlPool (runMigration migrateAccount) a
              runTLS t e $ v m a
-
 \end{code}
