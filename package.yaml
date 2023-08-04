@@ -24,8 +24,6 @@ language: GHC2021
 dependencies:
 - base >= 4.7 && < 5
 - aeson
-- blaze-markup
-- blaze-html
 - bytestring
 - crypton
 - dhall
@@ -33,7 +31,6 @@ dependencies:
 - persistent
 - persistent-sqlite
 - random
-- servant-blaze
 - servant-client
 - servant-multipart
 - servant-server

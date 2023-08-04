@@ -18,11 +18,8 @@ import Data.Char (chr)
 import Data.Text (Text,pack,unpack)
 import Database.Persist.Sqlite (ConnectionPool,runSqlPersistMPool,insert)
 import GHC.Generics (Generic)
-import Servant ((:<|>) (..),(:>),Server,Get,Post,ReqBody,JSON)
-import Servant.HTML.Blaze (HTML)
+import Servant ((:>),Server,Post,ReqBody,JSON)
 import System.Random (initStdGen,genShortByteString)
-import Text.Blaze (ToMarkup (..))
-import Text.Blaze.Html5 as H (docTypeHtml,head,title,body,p)
 
 data AccountRequirements = AccountRequirements
   { identifier :: Text
@@ -32,45 +29,29 @@ data AccountRequirements = AccountRequirements
 instance FromJSON AccountRequirements
 instance ToJSON AccountRequirements
 
-data RegisterPage = RegisterPage
-instance ToMarkup RegisterPage where
-  toMarkup _ = docTypeHtml $ do
-    H.head $ do
-      H.title "Ibew Tupa 2: Electric Boogaloo"
-    body $ do
-      p "Sign up now!"
+data RegistrationResult = RegistrationResult
+  { success :: Bool
+  , error :: Text
+  } deriving (Generic, Show)
 
-data RegisterStatus = RegisterFailure | RegisterSuccess
+instance FromJSON RegistrationResult
+instance ToJSON RegistrationResult
 
-data RegisteredPage = RegisteredPage RegisterStatus
-instance ToMarkup RegisteredPage where
-  toMarkup (RegisteredPage RegisterSuccess) = docTypeHtml $ do
-      H.head $ do
-        H.title "Ibew Tupa 3: The Return of K.K. Slider"
-      body $ do
-        p "Signed up!"
-  toMarkup (RegisteredPage RegisterFailure) = docTypeHtml $ do
-        H.head $ do
-          H.title "Ibew Tupa 3: The Return of K.K. Slider"
-        body $ do
-          p "Sorry, signing up failed--please try again."
-
-type REGISTER = "register" :> Get '[HTML] RegisterPage
-           :<|> "register" :> ReqBody '[JSON] AccountRequirements
-                           :> Post '[HTML] RegisteredPage
+type REGISTER = "register" :> ReqBody '[JSON] AccountRequirements
+                           :> Post '[JSON] RegistrationResult
 
 registerIO :: ConnectionPool -> Server REGISTER
-registerIO o = (return RegisterPage) :<|> register
+registerIO o = register
   where
-    toText x = pack $ (chr . fromIntegral) <$> (B.unpack x)
-    register :: MonadIO m => AccountRequirements -> m RegisteredPage
+    register :: MonadIO m => AccountRequirements -> m RegistrationResult
     register (AccountRequirements i w) =
-      let hp (CryptoPassed hash') salt = do
+      let toText x = pack $ (chr . fromIntegral) <$> (B.unpack x)
+          hp (CryptoPassed hash') salt = do
             let h = toText hash'
             let s = toText salt
             _ <- liftIO $ runSqlPersistMPool (insert $ Account i h s) o
-            return $ RegisteredPage RegisterSuccess
-          hp _ _ = return $ RegisteredPage RegisterFailure
+            return $ RegistrationResult True ""
+          hp _ _ = return $ RegistrationResult False "Cryptography failed"
       in do
         r <- initStdGen
         let pass = (C.pack . unpack) w

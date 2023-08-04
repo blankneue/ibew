@@ -5,7 +5,6 @@ module App
 
 import Configuration
 import DB
-import Endpoints.Landing
 import Endpoints.Login
 import Endpoints.Messages
 import Endpoints.Register
@@ -25,8 +24,7 @@ import Servant ((:<|>) (..)
                ,serveWithContext)
 
 
-type APP = LANDING
-      :<|> REGISTER
+type APP = REGISTER
       :<|> LOGIN :>
          ( MESSAGES
          )
@@ -35,7 +33,7 @@ api :: Proxy APP
 api = Proxy
 
 server :: ConnectionPool -> ConnectionPool -> Server APP
-server m a = landing :<|> (registerIO a) :<|> return (messageIO m)
+server m a = (registerIO a) :<|> return (messageIO m)
 
 run :: Configuration -> IO ()
 run c = let fromNatural = fromInteger . toInteger

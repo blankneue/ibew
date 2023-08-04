@@ -21,23 +21,19 @@ import Network.WebSockets (PendingConnection
                           ,acceptRequest)
 import Servant ((:<|>) (..),(:>),Get,Server)
 import Servant.API.WebSocket (WebSocketPending)
-import Servant.HTML.Blaze (HTML)
-import Text.Blaze (ToMarkup (..))
-import Text.Blaze.Html5 as H (head,title,body,p,docTypeHtml)
+\end{code}
 
-data MessagePage = MessagePage
-instance ToMarkup MessagePage where
-  toMarkup _ = docTypeHtml $ do
-    H.head $ do
-      title "Ibew Tupa: The Reckoning"
-    body $ do
-      p "Get them messages"
+These are the first two characters in the reserved block.
+They correspond to two commands for the eventual interpreter.
+\begin{code}
+getCmd, putCmd :: Char
+getCmd = '\57344'
+putCmd = '\57345'
 
-type MESSAGES = "app" :> Get '[HTML] MessagePage
-           :<|> "messages" :> WebSocketPending
+type MESSAGES = "messages" :> WebSocketPending
 
 messageIO :: ConnectionPool -> Server MESSAGES
-messageIO o = (return MessagePage) :<|> echo
+messageIO o = echo
   where
     echo :: MonadIO m => PendingConnection -> m ()
     echo w = liftIO $ do
