@@ -20,7 +20,7 @@ import Servant (BasicAuth
                ,basicAuthUsername
                ,basicAuthPassword)
 
-type LOGIN = BasicAuth "Login" Account
+type LOGIN = BasicAuth "Ibew" Account
 
 loginIO :: ConnectionPool -> BasicAuthCheck Account
 loginIO o = BasicAuthCheck $ \b ->

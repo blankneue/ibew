@@ -31,6 +31,7 @@ $(deriveJSON defaultOptions ''Account)
 
 share [mkPersist sqlSettings, mkMigrate "migrateMessage"] [persistLowerCase|
 Message
+  identifier Text
   content Text
   sent UTCTime
   deriving Eq

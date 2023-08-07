@@ -33,7 +33,7 @@ api :: Proxy APP
 api = Proxy
 
 server :: ConnectionPool -> ConnectionPool -> Server APP
-server m a = (registerIO a) :<|> return (messageIO m)
+server m a = (registerIO a) :<|> (messageIO m)
 
 run :: Configuration -> IO ()
 run c = let fromNatural = fromInteger . toInteger

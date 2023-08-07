@@ -15,7 +15,7 @@ import qualified Data.ByteString.Char8 as C (pack)
 import Data.Aeson (FromJSON,ToJSON)
 import Data.ByteString.Short (fromShort)
 import Data.Char (chr)
-import Data.Text (Text,pack,unpack)
+import Data.Text (Text,pack,unpack,append)
 import Database.Persist.Sqlite (ConnectionPool,runSqlPersistMPool,insert)
 import GHC.Generics (Generic)
 import Servant ((:>),Server,Post,ReqBody,JSON)
@@ -51,7 +51,9 @@ registerIO o = register
             let s = toText salt
             _ <- liftIO $ runSqlPersistMPool (insert $ Account i h s) o
             return $ RegistrationResult True ""
-          hp _ _ = return $ RegistrationResult False "Cryptography failed"
+          hp (CryptoFailed e) _ = return $ RegistrationResult
+            False
+            (append "Cryptography failed: " (pack $ show e))
       in do
         r <- initStdGen
         let pass = (C.pack . unpack) w
