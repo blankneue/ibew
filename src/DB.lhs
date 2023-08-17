@@ -22,12 +22,22 @@ Account
   identifier Text
   hash Text
   salt Text
-  UniqueID identifier
+  AccountDef identifier
+  deriving Eq
+  deriving Show
+
+Headmate
+  accountId AccountId
+  name Text
+  tag Text
+  HeadmateDef accountId name
   deriving Eq
   deriving Show
 |]
 
 $(deriveJSON defaultOptions ''Account)
+
+$(deriveJSON defaultOptions ''Headmate)
 
 share [mkPersist sqlSettings, mkMigrate "migrateMessage"] [persistLowerCase|
 Message

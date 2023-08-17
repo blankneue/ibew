@@ -7,6 +7,7 @@ import Configuration
 import DB
 import Endpoints.Login
 import Endpoints.Messages
+import Endpoints.Headmates
 import Endpoints.Register
 
 import Control.Monad.Logger (runStderrLoggingT)
@@ -23,17 +24,20 @@ import Servant ((:<|>) (..)
                ,Proxy (..)
                ,serveWithContext)
 
-
+type PRIVATE = MESSAGES
+          :<|> HEADMATES
 type APP = REGISTER
-      :<|> LOGIN :>
-         ( MESSAGES
-         )
+      :<|> LOGIN :> PRIVATE
 
 api :: Proxy APP
 api = Proxy
 
+private :: ConnectionPool -> ConnectionPool -> Account -> Server PRIVATE
+private m a a' = (messageIO m a') :<|> (headmatesIO a a')
+
 server :: ConnectionPool -> ConnectionPool -> Server APP
-server m a = (registerIO a) :<|> (messageIO m)
+server m a = (registerIO a)
+        :<|> (private m a)
 
 run :: Configuration -> IO ()
 run c = let fromNatural = fromInteger . toInteger

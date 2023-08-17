@@ -37,7 +37,7 @@ loginIO o = BasicAuthCheck $ \b ->
       pc _ _ = return BadPassword
   in case (u, p) of
        (Right u', Right p') ->
-         runSqlPersistMPool (getBy $ UniqueID u') o
+         runSqlPersistMPool (getBy $ AccountDef u') o
          >>= hc (toBS p')
        _ -> return NoSuchUser
 \end{code}
