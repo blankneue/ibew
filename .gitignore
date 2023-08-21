@@ -8,3 +8,5 @@ dist-newstyle
 *.t2d
 *.log
 *.sqlite3*
+*.aux
+*.toc
