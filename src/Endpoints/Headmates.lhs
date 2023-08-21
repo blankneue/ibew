@@ -1,3 +1,5 @@
+\chapter{Headmates}
+
 \begin{code}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}

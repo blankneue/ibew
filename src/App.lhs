@@ -1,3 +1,5 @@
+\chapter{App: The Top Level}
+
 \begin{code}
 module App
     ( run

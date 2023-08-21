@@ -1,3 +1,5 @@
+\chapter{Configuring Ibew}
+
 \begin{code}
 {-# LANGUAGE DeriveGeneric      #-}
 

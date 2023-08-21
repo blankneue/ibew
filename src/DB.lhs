@@ -1,3 +1,5 @@
+\chapter{Database Definitions}
+
 \begin{code}
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE TemplateHaskell            #-}

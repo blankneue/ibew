@@ -1,3 +1,5 @@
+\chapter{Messages}
+
 \begin{code}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}

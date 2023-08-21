@@ -1,3 +1,5 @@
+\chapter{Hashing the Passwords}
+
 \begin{code}
 module Hashing (argonHash) where
 

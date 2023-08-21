@@ -1,3 +1,5 @@
+\chapter{Registering an Account}
+
 \begin{code}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}

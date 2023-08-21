@@ -1,3 +1,5 @@
+\chapter{Logging In}
+
 Note to self: the case statement nightmare in the loginIO function could be fixed with a couple of monad transformers; EitherT and MaybeT.
 \begin{code}
 {-# LANGUAGE DataKinds #-}
