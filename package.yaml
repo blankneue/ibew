@@ -28,6 +28,7 @@ dependencies:
 - crypton
 - dhall
 - monad-logger
+- mtl
 - persistent
 - persistent-sqlite
 - random
