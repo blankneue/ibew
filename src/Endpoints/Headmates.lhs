@@ -23,14 +23,15 @@ import Servant ((:<|>) (..),(:>),Server,Post,Get,ReqBody,JSON)
 
 data ClientHeadmate = ClientHeadmate
   { name :: Text
-  , tag :: Text
+  , tagHead :: Text
+  , tagTail :: Text
   } deriving (Generic, Show)
 
 instance FromJSON ClientHeadmate
 instance ToJSON ClientHeadmate
 
 clientHeadmate :: Entity Headmate -> ClientHeadmate
-clientHeadmate (Entity _ (Headmate _ n t)) = ClientHeadmate n t
+clientHeadmate (Entity _ (Headmate _ n th tt)) = ClientHeadmate n th tt
 
 type HEADMATES = "headmates" :> ReqBody '[JSON] ClientHeadmate
                              :> Post '[JSON] (Maybe ClientHeadmate)
@@ -46,7 +47,7 @@ headmatesIO o a = headmateCreate :<|> headmatesGet
         (selectFirst [AccountIdentifier ==. i] []) o
       case a' of
         Just i' -> do
-          let h' = Headmate (entityKey i') (name h) (tag h)
+          let h' = Headmate (entityKey i') (name h) (tagHead h) (tagTail h)
           _ <- runSqlPersistMPool (insert h') o
           return $ Just h
         _ -> return Nothing

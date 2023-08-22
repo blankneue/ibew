@@ -31,7 +31,8 @@ Account
 Headmate
   accountId AccountId
   name Text
-  tag Text
+  tagHead Text
+  tagTail Text
   HeadmateDef accountId name
   deriving Eq
   deriving Show
