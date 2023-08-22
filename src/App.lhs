@@ -35,7 +35,7 @@ api :: Proxy APP
 api = Proxy
 
 private :: ConnectionPool -> ConnectionPool -> Account -> Server PRIVATE
-private m a a' = (messageIO m a') :<|> (headmatesIO a a')
+private m a a' = (messageIO m a a') :<|> (headmatesIO a a')
 
 server :: ConnectionPool -> ConnectionPool -> Server APP
 server m a = (registerIO a)

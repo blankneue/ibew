@@ -52,8 +52,8 @@ type MESSAGES = "messages" :> WebSocketPending
            :<|> "messages" :> ReqBody '[JSON] NewMessage
                            :> Post '[JSON] Message
 
-messageIO :: ConnectionPool -> Account -> Server MESSAGES
-messageIO o a = messageStream :<|> getMessages :<|> postMessage
+messageIO :: ConnectionPool -> ConnectionPool -> Account -> Server MESSAGES
+messageIO o p a = messageStream :<|> getMessages :<|> postMessage
   where
     messageStream :: MonadIO m => PendingConnection -> m ()
     messageStream w =
