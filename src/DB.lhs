@@ -33,7 +33,7 @@ Headmate
   name Text
   tagHead Text
   tagTail Text
-  HeadmateDef accountId name
+  HeadmateDef accountId name tagHead tagTail
   deriving Eq
   deriving Show
 |]
