@@ -18,8 +18,8 @@ checkTail a b = (takeEnd (length b) a) == b
 checkLength :: Text -> (Text, Text) -> Bool
 checkLength a (b, c) = length a > (length b + length c)
 
-checkMessage :: Text -> (Text, Text) -> Bool
-checkMessage a (b, c) = and [checkLength a (b, c)
+checkMessage :: (Text, Text) -> Text -> Bool
+checkMessage (b, c) a = and [checkLength a (b, c)
                             ,checkHead a b
                             ,checkTail a c]
 \end{code}

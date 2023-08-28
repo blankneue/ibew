@@ -13,6 +13,8 @@ module DB where
 import Data.Aeson.TH (deriveJSON, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
+import Database.Persist (Entity (..), (==.),selectFirst)
+import Database.Persist.Sqlite (ConnectionPool,runSqlPersistMPool)
 import Database.Persist.TH (share
                            ,mkPersist
                            ,sqlSettings
@@ -44,7 +46,8 @@ $(deriveJSON defaultOptions ''Headmate)
 
 share [mkPersist sqlSettings, mkMigrate "migrateMessage"] [persistLowerCase|
 Message
-  identifier Text
+  accountId AccountId
+  headmateId (Maybe HeadmateId)
   content Text
   sent UTCTime
   deriving Eq
@@ -52,4 +55,15 @@ Message
 |]
 
 $(deriveJSON defaultOptions ''Message)
+\end{code}
+
+Some utility functions.
+
+\begin{code}
+accountKey :: Account -> ConnectionPool -> IO (Maybe (Entity Account))
+accountKey a o = do
+  let i = accountIdentifier a
+  a' <- runSqlPersistMPool
+    (selectFirst [AccountIdentifier ==. i] []) o
+  return a'
 \end{code}

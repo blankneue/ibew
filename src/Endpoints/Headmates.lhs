@@ -17,7 +17,6 @@ import Database.Persist ((==.),entityKey,Entity (..))
 import Database.Persist.Sqlite (ConnectionPool
                                ,runSqlPersistMPool
                                ,insert
-                               ,selectFirst
                                ,selectList)
 import GHC.Generics (Generic)
 import Servant ((:<|>) (..)
@@ -54,9 +53,7 @@ headmatesIO o a = headmateCreate :<|> headmatesGet
                    => ClientHeadmate
                    -> m ClientHeadmate
     headmateCreate h = do
-      let i = accountIdentifier a
-      a' <- liftIO $ runSqlPersistMPool
-        (selectFirst [AccountIdentifier ==. i] []) o
+      a' <- liftIO $ accountKey a o
       case a' of
         Just i' -> do
           let h' = Headmate (entityKey i') (name h) (tagHead h) (tagTail h)
@@ -65,9 +62,7 @@ headmatesIO o a = headmateCreate :<|> headmatesGet
         _ -> throwError err403
     headmatesGet :: (MonadIO m, MonadError ServerError m) => m [ClientHeadmate]
     headmatesGet = do
-      let i = accountIdentifier a
-      a' <- liftIO $ runSqlPersistMPool
-        (selectFirst [AccountIdentifier ==. i] []) o
+      a' <- liftIO $ accountKey a o
       case a' of
         Just i' -> do
           h <- liftIO $ runSqlPersistMPool
