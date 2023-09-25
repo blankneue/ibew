@@ -27,11 +27,6 @@ import Database.Persist (insert
                         ,(==.))
 import Database.Persist.Sqlite (ConnectionPool,runSqlPersistMPool)
 import GHC.Generics (Generic)
-import Network.WebSockets (PendingConnection
-                          ,Connection
-                          ,sendTextData
-                          ,withPingThread
-                          ,acceptRequest)
 import Servant ((:<|>) (..)
                ,(:>)
                ,Server
@@ -42,8 +37,11 @@ import Servant ((:<|>) (..)
                ,ServerError
                ,throwError
                ,err422
-               ,err403)
-import Servant.API.WebSocket (WebSocketPending)
+               ,err403
+               ,StreamGet
+               ,NewlineFraming
+               ,SourceIO)
+import Servant.Types.SourceT
 
 data MessageRequest = MessageRequest
   { dateUntil :: UTCTime
@@ -61,7 +59,7 @@ data NewMessage = NewMessage
 instance FromJSON NewMessage
 instance ToJSON NewMessage
 
-type MESSAGES = "messages" :> WebSocketPending
+type MESSAGES = "messages" :> StreamGet NewlineFraming JSON (SourceIO Message)
            :<|> "messages" :> ReqBody '[JSON] MessageRequest
                            :> Get '[JSON] [Message]
            :<|> "messages" :> ReqBody '[JSON] NewMessage
@@ -69,36 +67,37 @@ type MESSAGES = "messages" :> WebSocketPending
 
 messageIO :: ConnectionPool -> ConnectionPool -> Account -> Server MESSAGES
 messageIO o p a = messageStream :<|> getMessages :<|> postMessage
+\end{code}
+
+The most complicated one is the HTTP Streaming endpoint.
+This is what will keep a user up-to-date on the latest messages.
+The method I'm doing that with is:
+1. Get the latest message
+2. Send the messages newer than that one to the user
+3. Recurse with the last one from that list as the newest "latest message"
+The issue I'm encountering is, how do I fit that into the SourceIO datatype?
+I can't call a recursion and append it to the list, because it's effectful.
+So, I have to find some other way.
+It has to repeat forever, until the user disconnects, so I can't call a recursion before the final return--the recursion has to be part of the return.
+So maybe I need a different design?
+How does the stream `end' anyway?
+
+A rethink is what's needed.
+We'll need to study SourceT a bit more so we can grok what it's expecting.
+Once we have that, we might have a smarter design in mind.
+
+\begin{code}
   where
-    messageStream :: MonadIO m => PendingConnection -> m ()
-    messageStream w =
-      let go :: MonadIO m => Connection -> Message -> m ()
-          go c m = liftIO $ do
-            l <- runSqlPersistMPool
-                   (selectFirst [] [Desc MessageSent]) o
-            case l of
-              Just l' -> do
-                let e = entityVal l'
-                if e == m
-                then go c m
-                else do
-                  let d = messageSent m
-                  let d' = messageSent e
-                  n <- runSqlPersistMPool
-                         (selectList [MessageSent >. d
-                                     ,MessageSent <=. d']
-                                     []) o
-                  sendTextData c $ encode $ entityVal <$> n
-                  go c e
-              _ -> return ()
+    messageStream =
+      let go m = go m
       in liftIO $ do
-        c <- acceptRequest w
-        l <- runSqlPersistMPool (selectFirst [] [Desc MessageSent]) o
-        case l of
-          Just l' -> liftIO $ do
-            withPingThread c 10 (return ()) (return ())
-            go c $ entityVal l'
-          _ -> return ()
+          l <- runSqlPersistMPool (selectFirst [] [Desc MessageSent]) o
+          case l of
+            Just l' -> go (entityVal l')
+            _ -> return $ source []
+\end{code}
+
+\begin{code}
     getMessages :: MonadIO m => MessageRequest -> m [Message]
     getMessages r = liftIO $ do
       let d = dateUntil r
